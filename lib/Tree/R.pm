@@ -26,7 +26,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =pod
 
@@ -388,9 +388,10 @@ sub PickNext {
     my @cover_of_to2 = @$to2[2..5];
     for my $i (0..$#$from) {
 	my $a1 = area_of_rect(enlarged_rect(@cover_of_to1,@{$from->[$i]}[2..5]));
+	$area_of_enlarged1 = $a1 unless defined $area_of_enlarged1;
 	my $a2 = area_of_rect(enlarged_rect(@cover_of_to2,@{$from->[$i]}[2..5]));
-	my $diff = abs(($area_of_enlarged1 - $area_of_to1) - 
-		       ($area_of_enlarged2 - $area_of_to2)) if $next;
+	$area_of_enlarged2 = $a2 unless defined $area_of_enlarged2;
+	my $diff = abs(($area_of_enlarged1 - $area_of_to1) - ($area_of_enlarged2 - $area_of_to2));
 	if (!$next or $diff > $max_diff) {
 	    $next = $i;
 	    $max_diff = $diff;

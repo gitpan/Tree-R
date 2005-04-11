@@ -3,4 +3,5 @@ Revision history for Perl extension Tree::R.
 0.01  Mon Apr 11 09:43:42 2005
 	- original version; created by h2xs 1.23 with options
 		-X Tree::R
-
+0.02  Apr 11 2005
+	- fixed a small bug in PickNext

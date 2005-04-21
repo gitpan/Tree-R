@@ -5,3 +5,5 @@ Revision history for Perl extension Tree::R.
 		-X Tree::R
 0.02  Apr 11 2005
 	- fixed a small bug in PickNext
+0.03  Apr 21 2005
+	- fixed a small bug in remove

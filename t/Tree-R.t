@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 7;
+use Test::More tests => 12;
 BEGIN { use_ok('Tree::R') };
 
 #########################
@@ -51,4 +51,29 @@ for (1..2) {
     
     $rtree->remove(3);
     $rtree->insert(3,@{$objects{3}});   
+}
+
+$rtree = new Tree::R m=>2,M=>3;
+
+for my $object (keys %objects) {
+    my @bbox = @{$objects{$object}}; # (minx,miny,maxx,maxy)
+    $rtree->insert($object,@bbox);
+}
+
+for my $object (keys %objects) {
+
+    my @o1;
+    $rtree->objects(\@o1);
+    @o1 = sort @o1;
+
+    $rtree->remove($object);
+
+    $rtree->insert($object,@{$objects{$object}});
+
+    my @o2;
+    $rtree->objects(\@o2);
+    @o2 = sort @o2;
+
+    is_deeply(\@o1, \@o2, 'remove and insert');
+
 }

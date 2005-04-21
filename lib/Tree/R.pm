@@ -1,8 +1,10 @@
 package Tree::R;
 
-use 5.008005;
+use 5.005000;
 use strict;
 use warnings;
+
+use Data::Dumper;
 
 require Exporter;
 use AutoLoader qw(AUTOLOAD);
@@ -26,7 +28,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =pod
 
@@ -116,6 +118,19 @@ sub new {
 #    $child == [[0,$object,@rect],...] if leaf or [[1,$child,@rect],...] if non-leaf
     bless $self => (ref($package) or $package);
     return $self;
+}
+
+sub objects {
+    my ($self,$objects,$N) = @_;
+    $N = $self->{root} unless $N;
+    unless ($N->[0]) {
+	push @$objects,$N->[1];
+    } else {
+	# check entries
+	for my $entry (@{$N->[1]}) {
+	    $self->objects($objects,$entry);
+	}
+    }
 }
 
 sub query_point {
@@ -217,6 +232,7 @@ sub set_bboxes {
 sub remove {
     my ($self,$object) = @_;
     my ($parent,$index_of_leaf,$leaf,$index) = $self->get_leaf($object);
+
     return unless $leaf;
 
     # remove the object
@@ -231,20 +247,14 @@ sub remove {
 	# is the parent now too small?
 	if (@{$parent->[1]} < $self->{m}) {
 
-	    # yes, parent becomes a leaf
+	    # yes, move the children up
 	    my @new_child_list;
 	    for my $entry (@{$parent->[1]}) {
 		for my $child (@{$entry->[1]}) {
 		    push @new_child_list,$child;
 		}
 	    }
-	    for my $child (@{$leaf->[1]}) {
-		push @new_child_list,$child;
-	    }
 	    $parent->[1] = [@new_child_list];
-
-	    # nothing to reinsert after this
-	    $leaf->[1] = [];
 	    
 	}
 
@@ -289,6 +299,7 @@ sub ChooseSubTree {
     my $N = $self->{root};
   CS2:
     @$N[2..5] = enlarged_rect(@$N[2..5],@rect);
+#    print STDERR "N = $N, $N->[0], @{$N->[1]}\n";
     unless ($N->[1]->[0]->[0]) { # is leaf
 	return $N;
     } else {

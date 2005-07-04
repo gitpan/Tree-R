@@ -7,3 +7,5 @@ Revision history for Perl extension Tree::R.
 	- fixed a small bug in PickNext
 0.03  Apr 21 2005
 	- fixed a small bug in remove
+0.04  Jul 4 2005
+	- changed to non-recursive queries from liuyi at cis.uab.edu

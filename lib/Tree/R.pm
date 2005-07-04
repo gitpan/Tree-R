@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =pod
 
@@ -147,7 +147,8 @@ sub query_point {
     }
 }
 
-sub query_completely_within_rect {
+#recursive is buggy: deprecate
+sub query_completely_within_rect_recursive {
     my($self,$minx,$miny,$maxx,$maxy,$objects,$N) = @_;
     $N = $self->{root} unless $N;
     return if 
@@ -166,9 +167,51 @@ sub query_completely_within_rect {
     }
 }
 
+#non-recursive from liuyi at cis.uab.edu
+sub query_completely_within_rect 
+{
+    my($self,$minx,$miny,$maxx,$maxy,$objects,$Node) = @_;
+    $Node = $self->{root} unless $Node;
+	my @entries;
+	push @entries,\$Node; 
+	
+	while (@entries>0)
+	{
+		my $N = pop @entries;
+		if (${$N}->[2] > $maxx or # right
+			${$N}->[4] < $minx or # left
+			${$N}->[3] > $maxy or # above
+			${$N}->[5] < $miny) # below
+		{
+			next;
+		}
+		else
+		{
+			if ((!${$N}->[0])
+				and (${$N}->[2] >= $minx) 
+				and (${$N}->[4] <= $maxx) 
+				and (${$N}->[3] >= $miny) 
+				and (${$N}->[5] <= $maxy))
+			{
+				push @$objects,${$N}->[1];
+			}
+			
+			if (${$N}->[0])
+			{
+				foreach my $e (@{${$N}->[1]})
+				{
+					push @entries,\$e;
+				}
+			}		
+		}
+	}	
+	return $objects;
+}
+
+# recursive is buggy: deprecate
 # N is not in rect if N is completely to the right|left|above|below of the rect
 # rename overlap with?
-sub query_partly_within_rect {
+sub query_partly_within_rect_recursive {
     my($self,$minx,$miny,$maxx,$maxy,$objects,$N) = @_;
     $N = $self->{root} unless $N;
     return if 
@@ -184,6 +227,42 @@ sub query_partly_within_rect {
 	    $self->query_partly_within_rect($minx,$miny,$maxx,$maxy,$objects,$entry);
 	}
     }
+}
+
+#non-recursive from liuyi at cis.uab.edu
+sub query_partly_within_rect 
+{
+	my($self,$minx,$miny,$maxx,$maxy,$objects,$Node) = @_;
+    $Node = $self->{root} unless $Node;
+	my @entries;
+	push @entries,\$Node; 
+	
+	while (@entries>0)
+	{
+		my $N = pop @entries;
+		if (${$N}->[2] > $maxx or # right
+			${$N}->[4] < $minx or # left
+			${$N}->[3] > $maxy or # above
+			${$N}->[5] < $miny) # below
+		{
+			next;
+		}
+		else
+		{
+			if (!${$N}->[0])
+			{
+				push @$objects,${$N}->[1];
+			}
+			else
+			{
+				foreach my $e (@{${$N}->[1]})
+				{
+					push @entries,\$e;
+				}
+			}		
+		}
+	}	
+	return $objects;
 }
 
 sub insert {

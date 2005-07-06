@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =pod
 
@@ -459,7 +459,7 @@ sub DistributeEntry {
     my $cmp = $area_of_enlarged1 - $area_of_to1 <=> $area_of_enlarged2 - $area_of_to2;
     $cmp = $area_of_to1 <=> $area_of_to2 if $cmp == 0;
     $cmp = @{$to1->[1]} <=> @{$to2->[1]} if $cmp == 0;
-    if ($cmp < 0) {
+    if ($cmp <= 0) {
 	add_to_group($to1,$from->[$next]);
 	splice(@$from,$next,1);
     } elsif ($cmp > 0) {

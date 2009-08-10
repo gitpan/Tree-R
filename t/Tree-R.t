@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 12;
+use Test::More tests => 16;
 BEGIN { use_ok('Tree::R') };
 
 #########################
@@ -76,4 +76,47 @@ for my $object (keys %objects) {
 
     is_deeply(\@o1, \@o2, 'remove and insert');
 
+}
+
+# Tests	from Brandon Forehand:
+
+my $r_tree = Tree::R->new();
+
+isa_ok($r_tree, 'Tree::R');
+
+my $rects = {
+    1 => [0, 0, 10, 20],
+    2 => [20, 0, 10, 20],
+    3 => [0, 30, 10, 20],
+    4 => [20, 30, 10, 20],
+};
+
+for my $rect (keys %$rects) {
+    $r_tree->insert($rect, @{$rects->{$rect}});
+}
+
+{
+    my @objects;
+    $r_tree->objects(\@objects);
+
+    is(scalar(@objects), 4);
+}
+
+for my $rect (keys %$rects) {
+    $r_tree->remove($rect);
+}
+
+{
+    my @objects;
+    $r_tree->objects(\@objects);
+
+    is(scalar(@objects), 0);
+}
+
+$r_tree->insert($rects->{1}, @{$rects->{1}});
+{
+    my @objects;
+    $r_tree->objects(\@objects);
+
+    is(scalar(@objects), 1);
 }

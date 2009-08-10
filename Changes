@@ -11,3 +11,5 @@ Revision history for Perl extension Tree::R.
 	- changed to non-recursive queries from liuyi at cis.uab.edu
 0.05  Jul 6 2005
 	- a fix for a bug of infinite loops in insert from devbrat at gmail.com
+0.06  Aug 10 2009
+      	- remove root if tree is empty after remove; check for empty trees in objects and dump

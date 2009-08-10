@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =pod
 
@@ -123,6 +123,7 @@ sub new {
 sub objects {
     my ($self,$objects,$N) = @_;
     $N = $self->{root} unless $N;
+    return unless $N;
     unless ($N->[0]) {
 	push @$objects,$N->[1];
     } else {
@@ -232,7 +233,7 @@ sub query_partly_within_rect_recursive {
 #non-recursive from liuyi at cis.uab.edu
 sub query_partly_within_rect 
 {
-	my($self,$minx,$miny,$maxx,$maxy,$objects,$Node) = @_;
+    my($self,$minx,$miny,$maxx,$maxy,$objects,$Node) = @_;
     $Node = $self->{root} unless $Node;
 	my @entries;
 	push @entries,\$Node; 
@@ -351,12 +352,13 @@ sub remove {
 	$self->set_bboxes();
 
     }
-
+    delete $self->{root} unless defined $self->{root}->[2];
 }
 
 sub dump {
     my ($self,$N,$level) = @_;
     $N = $self->{root} unless $N;
+    return unless $N;
     $level = 0 unless $level;
     unless ($N->[0]) {
 	print "($level) object $N $N->[1] rect @$N[2..5]\n";
